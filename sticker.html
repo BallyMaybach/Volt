@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sticker abgreifen – unf*ck berlin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <div class="content-wrapper">
+      <div id="view-sticker">
+        <a href="index.html"><img src="assets/logo.png" class="logo" alt="unf*ck berlin 0926" /></a>
+        <p class="tagline" id="stickerTagline">Hol dir den unfuck.berlin Sticker gratis.</p>
+        <form id="stickerForm" novalidate>
+          <input type="email" id="email" placeholder="E-Mail" autocomplete="email" required />
+          <input type="text" id="name" placeholder="Vor- und Nachname" autocomplete="name" required />
+          <input type="text" id="strasse" placeholder="Straße & Hausnummer" autocomplete="address-line1" required />
+          <div class="row">
+            <input type="text" id="plz" placeholder="PLZ" class="plz" autocomplete="postal-code" inputmode="numeric" maxlength="5" required />
+            <input type="text" id="stadt" placeholder="Stadt" class="stadt" autocomplete="address-level2" required />
+          </div>
+          <label class="checkbox-label">
+            <input type="checkbox" id="consent" required />
+            <span>Ich möchte über Volt Deutschland informiert werden und akzeptiere die <a href="https://voltdeutschland.org/datenschutz" class="inline-link" target="_blank" rel="noopener" onclick="event.stopPropagation()">Datenschutzerklärung</a> von Volt Deutschland.</span>
+          </label>
+          <div id="errorMsg" class="error-msg" hidden></div>
+          <button type="submit"><span class="btn-label">STICKER ABGREIFEN</span></button>
+        </form>
+        <div id="successSticker" class="success-state" hidden>
+          <div class="success-icon">✓</div>
+          <p>Dein 10 Stickers werden innerhalb 1-2 Wochen bei dir sein!</p>
+          <p>Dein Bestellungscode ist <strong id="orderCode">#00000</strong>.</p>
+          <p>Wenn du deine Bestellung stornieren oder deine Daten löschen lassen möchtest, kontaktiere uns bitte und gib deinen Code an.</p>
+          <p class="follow-heading">Folge uns für weiteres auf</p>
+          <div class="social-row">
+            <a href="https://www.facebook.com/BerlinVolt/?locale=de_DE" target="_blank" rel="noopener" aria-label="Facebook"><img src="logosSM/facebook.svg" alt="Facebook" /></a>
+            <a href="https://www.instagram.com/volt_berlin/" target="_blank" rel="noopener" aria-label="Instagram"><img src="logosSM/insta.svg" alt="Instagram" /></a>
+            <a href="https://twitter.com/volt_berlin" target="_blank" rel="noopener" aria-label="Twitter"><img src="logosSM/twitter.svg" alt="Twitter" /></a>
+            <a href="https://www.youtube.com/@voltdeutschland" target="_blank" rel="noopener" aria-label="YouTube"><img src="logosSM/youtube.svg" alt="YouTube" /></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <a href="https://voltdeutschland.org/berlin/impressum" target="_blank" rel="noopener">Impressum</a>
+    <a href="https://voltdeutschland.org/datenschutz" target="_blank" rel="noopener">Datenschutz</a>
+    <a href="https://voltdeutschland.org/berlin/transparenz" target="_blank" rel="noopener">Transparenz</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://ugxzkzydoajexjgwcqtq.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVneHprenlkb2FqZXhqZ3djcXRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNTM5MTksImV4cCI6MjA5NTgyOTkxOX0.pgO_pJ0ksQiGp5mYiLtz6E8uxD78MmWbXrufJA669_U';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const stickerForm = document.getElementById('stickerForm');
+    const errorMsg = document.getElementById('errorMsg');
+
+    stickerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.hidden = true;
+
+      const email = document.getElementById('email').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const strasse = document.getElementById('strasse').value.trim();
+      const plz = document.getElementById('plz').value.trim();
+      const stadt = document.getElementById('stadt').value.trim();
+      const consent = document.getElementById('consent').checked;
+
+      if (!email || !name || !strasse || !plz || !stadt) {
+        errorMsg.textContent = 'Bitte füll alle Felder aus.';
+        errorMsg.hidden = false;
+        return;
+      }
+      if (!consent) {
+        errorMsg.textContent = 'Bitte stimme der Datenschutzerklärung zu.';
+        errorMsg.hidden = false;
+        return;
+      }
+
+      const submitBtn = stickerForm.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+
+      const bestell_id = Math.floor(10000 + Math.random() * 90000);
+
+      const { error } = await supabaseClient
+        .from('sticker_requests')
+        .insert({ email, name, strasse, plz, stadt, consent, bestell_id });
+
+      if (error) {
+        errorMsg.textContent = 'Etwas ist schiefgelaufen. Versuch es nochmal.';
+        errorMsg.hidden = false;
+        submitBtn.disabled = false;
+        return;
+      }
+
+      document.getElementById('orderCode').textContent = '#' + bestell_id;
+      document.getElementById('stickerTagline').hidden = true;
+      stickerForm.hidden = true;
+      document.getElementById('successSticker').hidden = false;
+    });
+  </script>
+</body>
+</html>
