@@ -104,6 +104,7 @@ body {
   gap: 10px;
   cursor: pointer;
   border: none;
+  border-radius: 6px;
   transition: opacity 0.15s;
 }
 
@@ -182,7 +183,7 @@ input[type="text"] {
   padding: 16px 18px;
   background: #ffffff;
   border: none;
-  border-radius: 0;
+  border-radius: 6px;
   color: var(--purple-text);
   font-family: 'Nunito', sans-serif;
   font-size: 1rem;
@@ -335,18 +336,95 @@ input[type="text"]:focus {
   margin-bottom: 20px;
 }
 
+/* ── Nervkrams Intro ── */
+
+.nervkrams-intro {
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 22px 24px;
+  /* background: rgba(255, 255, 255, 0.05); */
+  /* border: 1px solid var(--border); */
+  /* box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.25); */
+  /* backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px); */
+}
+
+.nervkrams-intro__headline {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.nervkrams-intro__accent {
+  display: block;
+  color: var(--lime);
+  margin-top: 2px;
+}
+
+.nervkrams-intro__body {
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
 .btn-group {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: 26px;
-  margin-top: 64px;
+  width: fit-content;
+  margin: 64px auto 0;
 }
 
 .btn-link {
   text-decoration: none;
   display: flex;
   justify-content: center;
+}
+
+/* ── Countdown ── */
+
+.countdown-bar {
+  background: #1d0a2e;
+  padding: 28px 16px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.countdown {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.countdown-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+  padding: 7px 10px;
+  border: 2px solid var(--lime);
+  border-radius: 6px;
+  color: var(--lime);
+}
+
+.countdown-num {
+  font-size: 1.3rem;
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdown-unit {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 4px;
 }
 
 /* Landing-Buttons: gerade Boxen */
@@ -529,6 +607,12 @@ footer {
   padding: 20px 16px;
 }
 
+.countdown-bar + footer {
+  background: #1d0a2e;
+  padding-top: 36px;
+  padding-bottom: 24px;
+}
+
 footer a {
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.75rem;
@@ -676,10 +760,11 @@ footer a:hover {
 button[type="button"].btn-landing {
   transform: none;
   box-shadow: 4px 4px 0px rgba(0,0,0,0.25);
-  width: auto;
+  width: 100%;
   min-width: 200px;
   padding: 12px 24px;
   font-size: 0.95rem;
+  border-radius: 6px;
 }
 
 button[type="button"].btn-landing:hover {
