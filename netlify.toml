@@ -1,0 +1,5 @@
+# Build-Command MUSS `npm run build` sein, damit der prebuild-Hook
+# (scripts/fetch-content.mjs) läuft und die Inhalte frisch aus Sanity zieht.
+[build]
+  command = "npm run build"
+  publish = "dist"
