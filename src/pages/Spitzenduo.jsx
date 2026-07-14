@@ -1,18 +1,14 @@
-import WasMehr from "../components/WasMehr";
 import TermineSection from "../components/TermineSection";
 import SocialRow from "../components/SocialRow";
 import { SEITEN } from "../data";
 import { NL, CmsImg } from "../lib";
 
-function Fragen({ intro, fragen = [] }) {
+function Fragen({ fragen = [] }) {
   return (
     <>
-      <p className="mt-6 text-sm md:text-base leading-relaxed">
-        <NL text={intro} />
-      </p>
       {fragen.map((f, i) => (
         <div key={i}>
-          <h3 className="mt-10 text-xl md:text-3xl font-bold leading-tight">
+          <h3 className="mt-10 text-xl md:text-2xl font-bold leading-tight">
             <NL text={f.frage} />
           </h3>
           <p className="mt-4 text-sm md:text-base leading-relaxed">
@@ -33,12 +29,13 @@ export default function Spitzenduo() {
     <main className="bg-white text-volt-purple">
 
       {/* ANNA */}
-      <section className="max-w-3xl mx-auto px-5 md:px-8 pt-12 md:pt-20">
+      <section className="max-w-5xl mx-auto px-5 md:px-8 pt-12 md:pt-24">
         <h1 className="text-4xl md:text-6xl font-bold leading-[1.05] uppercase">
           <NL text={s.annaTitel} />
         </h1>
 
-        <div className="grid grid-cols-2 gap-4 mt-8 items-start">
+        {/* Desktop: Portrait links, Text + Jacke-Foto rechts. Mobile: kompakte Collage. */}
+        <div className="grid grid-cols-2 md:grid-cols-[4fr_5fr] gap-4 md:gap-10 mt-8 items-start">
           <div className="relative aspect-[3/4] overflow-hidden">
             <CmsImg
               src={s.annaBild}
@@ -46,20 +43,21 @@ export default function Spitzenduo() {
               className="absolute inset-0 w-full h-full object-cover object-top"
             />
           </div>
-          <p className="text-sm md:text-base leading-relaxed">
-            <NL text={s.annaIntro} />
-          </p>
+          <div>
+            <p className="text-xs md:text-sm leading-relaxed">
+              <NL text={s.annaIntro} />
+            </p>
+            <div className="mt-4 md:mt-8">
+              <CmsImg
+                src={s.annaBildJacke}
+                alt="Anna Auerbach — Freiheit ist die schönste Stadt der Welt"
+                className="w-full md:w-3/4 aspect-square object-cover"
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="flex justify-end mt-6">
-          <CmsImg
-            src={s.annaBildJacke}
-            alt="Anna Auerbach"
-            className="w-1/2 aspect-square object-cover"
-          />
-        </div>
-
-        <Fragen intro={s.annaIntro} fragen={s.annaFragen} />
+        <Fragen fragen={s.annaFragen} />
 
         <div className="mt-10 pb-14">
           <SocialRow label={s.annaSocialLabel} />
@@ -67,21 +65,21 @@ export default function Spitzenduo() {
       </section>
 
       {/* WIR IN DEN MEDIEN */}
-      <section className="bg-volt-purple text-white py-14 md:py-20">
-        <div className="max-w-5xl mx-auto px-5 md:px-8">
-          <h2 className="flex flex-col items-start gap-1 md:gap-2 text-4xl md:text-6xl font-bold uppercase mb-10">
+      <section className="bg-volt-purple text-white py-14 md:py-16">
+        <div className="max-w-6xl mx-auto px-5 md:px-8">
+          <h2 className="flex flex-col items-start gap-1 text-3xl md:text-4xl font-bold uppercase mb-8 md:mb-10">
             {medienTitel.map((z, i) => (
               <span key={i} className="hl hl-lime">{z}</span>
             ))}
           </h2>
 
-          <div className="grid grid-cols-3 gap-3">
-            {(medienBilder.length ? medienBilder : [null, null, null]).map((src, i) => (
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+            {(medienBilder.length ? medienBilder.slice(0, 3) : [null, null, null]).map((src, i) => (
               <CmsImg
                 key={i}
                 src={src}
                 alt="Volt in den Medien"
-                className="aspect-[3/4] w-full object-cover"
+                className={`aspect-[4/3] w-full object-cover bg-gray-300 ${i > 0 ? "hidden md:block" : ""}`}
               />
             ))}
           </div>
@@ -97,21 +95,21 @@ export default function Spitzenduo() {
           <div className="text-center mt-8">
             <a
               href="#"
-              className="inline-block bg-volt-lime text-volt-purple font-bold tracking-wide text-sm md:text-base px-7 py-3 rounded-md shadow-[4px_5px_0_#8FB000] btn-magnet"
+              className="inline-block bg-volt-lime text-volt-purple font-bold tracking-wide text-sm md:text-base px-7 py-3 rounded-md shadow-[4px_5px_0_#8FB000] btn-magnet uppercase"
             >
-              {s.medienButton}
+              {s.medienButton || "Mehr erfahren"}
             </a>
           </div>
         </div>
       </section>
 
       {/* PAUL */}
-      <section className="max-w-3xl mx-auto px-5 md:px-8 pt-12 md:pt-20">
+      <section className="max-w-5xl mx-auto px-5 md:px-8 pt-12 md:pt-24">
         <h2 className="text-4xl md:text-6xl font-bold leading-[1.05] uppercase">
           <NL text={s.paulTitel} />
         </h2>
 
-        <div className="relative aspect-[3/4] max-w-md mt-8 overflow-hidden">
+        <div className="relative aspect-[3/4] max-w-sm mt-8 overflow-hidden">
           <CmsImg
             src={s.paulBild}
             alt="Paul Löper"
@@ -119,15 +117,18 @@ export default function Spitzenduo() {
           />
         </div>
 
-        <Fragen intro={s.paulIntro} fragen={s.paulFragen} />
+        <p className="mt-8 text-sm md:text-base leading-relaxed">
+          <NL text={s.paulIntro} />
+        </p>
+
+        <Fragen fragen={s.paulFragen} />
 
         <div className="mt-10 pb-14">
           <SocialRow label={s.paulSocialLabel} />
         </div>
       </section>
 
-      <TermineSection title="hier kannst du uns treffen:" centered={false} count={2} />
-      <WasMehr />
+      <TermineSection title="Triff uns!" centered />
     </main>
   );
 }

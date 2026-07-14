@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { TERMINE } from "../data";
 import TerminCard from "./TerminCard";
 
-export default function TermineSection({ title = "Wahlkampf Kalender", centered = true, count }) {
-  const termine = count ? TERMINE.slice(0, count) : TERMINE;
+// Zeigt seitenübergreifend immer die nächsten Termine (Default: 3).
+export default function TermineSection({ title = "Triff uns!", centered = true, count = 3 }) {
+  const termine = TERMINE.slice(0, count);
 
   return (
     <section className="bg-volt-lime text-volt-purple py-10 md:py-16">

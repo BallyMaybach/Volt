@@ -25,20 +25,21 @@ const MONTH_DE = ['JAN', 'FEB', 'MÄR', 'APR', 'MAI', 'JUN', 'JUL', 'AUG', 'SEP'
 
 // Seiten-Singletons (redaktionelle Texte + Bilder pro Seite). Bild-Felder als CDN-URL.
 const SEITEN_QUERY = `{
-  "startseite": *[_id=="seiteStartseite"][0]{heroZeilen,heroText,heroButton,"heroBild":heroBild.asset->url,erstwaehlerText,erstwaehlerLink,kalenderTitel,kandidatenZeilen,kandidatenLink},
-  "countdown": *[_id=="seiteCountDown"][0]{heroZeilen,introText1,introText2,subFrageTitel,subFrageText,waehlenMit16Titel,waehlenMit16Text,voltomatTitel,voltomatText,voltomatButton},
+  "startseite": *[_id=="seiteStartseite"][0]{heroZeilen,heroText,heroButton,"heroBild":heroBild.asset->url,erstwaehlerText,erstwaehlerLink,kalenderTitel,countdownTitel,kandidatenZeilen,kandidatenText,kandidatenLink,unfckZeilen,unfckText,unfckButton,"unfckBild":unfckBild.asset->url},
+  "countdown": *[_id=="seiteCountDown"][0]{heroZeilen,erststimmeTitel,erststimmeText,"duoBild":duoBild.asset->url,duoLinkText,zweitstimmeTitel,zweitstimmeText,waehlenMit16Titel,gehoertDirTitel,waehlenMit16Text,programmButton,introText1,introText2,subFrageTitel,subFrageText,voltomatTitel,voltomatText,voltomatButton},
   "paulAnna": *[_id=="seitePaulAnna"][0]{annaTitel,"annaBild":annaBild.asset->url,"annaBildJacke":annaBildJacke.asset->url,annaIntro,annaFragen[]{frage,antwort},annaSocialLabel,medienTitelZeilen,"medienBilder":medienBilder[].asset->url,medienButton,paulTitel,"paulBild":paulBild.asset->url,paulIntro,paulFragen[]{frage,antwort},paulSocialLabel},
   "voltomat": *[_id=="seiteVoltomat"][0]{titel,text1,text2,button},
-  "mitmachen": *[_id=="seiteMitmachen"][0]{heroZeilen,heroText,carouselTitel,"carouselBilder":carouselBilder[].asset->url},
+  "mitmachen": *[_id=="seiteMitmachen"][0]{heroZeilen,heroText,einladungText,carouselTitel,"carouselBilder":carouselBilder[].asset->url,carouselButton},
   "imBezirk": *[_id=="seiteImBezirk"][0]{heroZeilen,heroText,werteWorte,werteText,kalenderTitel,voteTitel,voteText,voteButton,"voteBild":voteBild.asset->url},
   "bezirk": *[_id=="seiteBezirk"][0]{wasZuTunTitel,sorgenTitel,sorgenText,kandidierendeTitel},
   "alleKandis": *[_id=="seiteAlleKandis"][0]{titelZeilen,subtitle},
-  "unfck": *[_id=="seiteUnfck"][0]{heroZeilen,heroText,"collage1":collage1[].asset->url,textBlock1,"grossesBild":grossesBild.asset->url,textBlock2,"stickerBilder":stickerBilder[].asset->url,stickerButton}
+  "unfck": *[_id=="seiteUnfck"][0]{heroZeilen,introTitel,heroText,stickerButton,"grossesBild":grossesBild.asset->url,kraftTitel,textBlock1,programmButton,"collage1":collage1[].asset->url,schlussTitel,textBlock2,stimmeButton,"stickerBilder":stickerBilder[].asset->url},
+  "wahlprogramm": *[_id=="seiteWahlprogramm"][0]{titel,introBold,introText,programmButton,programmUrl,kapitel[]{titel,tags,text},europaZeilen,europaText,kalenderTitel}
 }`
 
 async function main() {
   const [agh, bvv, duo, termine, bezirkThemen, neuigkeiten, texte, SEITEN] = await Promise.all([
-    client.fetch(`*[_type=="kandidatAgh"]|order(listenplatz asc){"slug":slug.current,name,"foto":foto.asset->url,listenplatz,alter,bezirk,wahlkreis,themen}`),
+    client.fetch(`*[_type=="kandidatAgh"]|order(listenplatz asc){"slug":slug.current,name,"foto":foto.asset->url,listenplatz,alter,bezirk,wahlkreis,themen,herzensthema,ueberMich,"foto2":foto2.asset->url,berlinIst}`),
     client.fetch(`*[_type=="kandidatBvv"]|order(wahlkreis asc){name,wahlkreis,schwerpunkte}`),
     client.fetch(`*[_type=="spitzenduo"]|order(reihenfolge asc){"slug":slug.current,vorname,nachname,"foto":foto.asset->url}`),
     client.fetch(`*[_type=="termin"]|order(datum asc){datum,uhrzeit,typ,typeColor,titel,ort}`),
@@ -57,6 +58,10 @@ async function main() {
     bezirk: k.bezirk,
     wahlkreis: k.wahlkreis,
     themen: k.themen,
+    herzensthema: k.herzensthema || '',
+    ueberMich: k.ueberMich || '',
+    foto2: k.foto2 || '',
+    berlinIst: k.berlinIst || '',
   }))
 
   const KANDIDAT_INNEN = bvv.map((k) => ({
@@ -71,17 +76,23 @@ async function main() {
     foto: s.foto || '',
   }))
 
-  const TERMINE = termine.map((t) => {
-    const [y, m, d] = (t.datum || '').split('-')
-    return {
-      day: d || '',
-      month: m ? MONTH_DE[Number(m) - 1] : '',
-      type: t.typ || '',
-      typeColor: t.typeColor || 'pink',
-      title: t.titel || '',
-      where: [t.ort, t.uhrzeit].filter(Boolean).join(', '),
-    }
-  })
+  // Vergangene Termine fliegen raus (Stichtag: Build-Datum); Reihenfolge bleibt
+  // aufsteigend. Die Seiten zeigen daraus die jeweils nächsten Termine.
+  const heute = new Date().toISOString().slice(0, 10)
+  const TERMINE = termine
+    .filter((t) => (t.datum || '') >= heute)
+    .map((t) => {
+      const [y, m, d] = (t.datum || '').split('-')
+      return {
+        datum: t.datum || '',
+        day: d || '',
+        month: m ? MONTH_DE[Number(m) - 1] : '',
+        type: t.typ || '',
+        typeColor: t.typeColor || 'pink',
+        title: t.titel || '',
+        where: [t.ort, t.uhrzeit].filter(Boolean).join(', '),
+      }
+    })
 
   const BEZIRK_THEMEN = {}
   for (const b of bezirkThemen) {

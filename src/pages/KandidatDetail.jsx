@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
-import WasMehr from "../components/WasMehr";
 import SocialRow from "../components/SocialRow";
-import { KANDIDATEN, PLATZHALTER, PLATZHALTER_LANG } from "../data";
+import { KANDIDATEN, PLATZHALTER } from "../data";
+import { NL, CmsImg } from "../lib";
 
 export default function KandidatDetail() {
   const { slug } = useParams();
@@ -23,54 +23,43 @@ export default function KandidatDetail() {
 
   return (
     <main className="bg-white text-volt-purple">
-      <section className="max-w-3xl mx-auto px-5 md:px-8 pt-12 md:pt-20 pb-14">
+      <section className="max-w-5xl mx-auto px-5 md:px-8 pt-12 md:pt-24 pb-14">
         <h1 className="text-4xl md:text-6xl font-bold leading-[1.05] uppercase">
           {vorname}<br />{nachname}
         </h1>
 
-        <div className="relative aspect-[4/5] max-w-md mt-8 overflow-hidden">
-          <img src={k.foto} alt={k.name} className="absolute inset-0 w-full h-full object-cover object-top" />
+        <div className="relative aspect-[3/4] max-w-sm mt-8 overflow-hidden">
+          <CmsImg src={k.foto} alt={k.name} className="absolute inset-0 w-full h-full object-cover object-top" />
         </div>
 
-        <p className="mt-4 text-sm md:text-base font-medium">
+        <p className="mt-4 text-xs md:text-sm font-medium">
           AGH Kandidat:in&ensp;I&ensp;Listenplatz: {k.listenplatz} | Alter: {k.alter}<br />
           {k.bezirk}
         </p>
 
-        <h2 className="mt-12 text-2xl md:text-4xl font-bold">Herzensthema</h2>
-        <p className="mt-4 text-sm md:text-base leading-relaxed">{PLATZHALTER}</p>
-        <p className="mt-4 text-sm md:text-base leading-relaxed opacity-90">
-          Kein neutraler Wahl-o-Mat:<br />{PLATZHALTER_LANG}
+        <h2 className="mt-12 text-2xl md:text-3xl font-bold">Herzensthema</h2>
+        <p className="mt-4 text-sm md:text-base leading-relaxed">
+          <NL text={k.herzensthema || PLATZHALTER} />
         </p>
 
-        <h2 className="mt-12 text-2xl md:text-4xl font-bold">Über mich</h2>
+        <h2 className="mt-12 md:mt-16 text-2xl md:text-3xl font-bold">Über mich</h2>
         <p className="mt-4 text-sm md:text-base leading-relaxed">
-          {vorname} setzt sich für {k.themen} ein — mit einem klaren, europäischen
-          Blick auf Berlin.
-        </p>
-        <p className="mt-4 text-sm md:text-base leading-relaxed">
-          {vorname} ist geborene und leidenschaftliche Berliner:in und kandidiert
-          im {k.wahlkreis} für das Abgeordnetenhaus.
+          <NL text={k.ueberMich || PLATZHALTER} />
         </p>
 
-        <div className="relative aspect-[4/5] max-w-xs mt-8 overflow-hidden">
-          <img src={k.foto} alt={k.name} className="absolute inset-0 w-full h-full object-cover object-top" />
+        <div className="relative aspect-[3/4] max-w-[220px] md:max-w-[260px] mt-10 overflow-hidden">
+          <CmsImg src={k.foto2 || k.foto} alt={k.name} className="absolute inset-0 w-full h-full object-cover object-top" />
         </div>
 
-        <h2 className="mt-12 text-2xl md:text-4xl font-bold">Berlin ist…</h2>
-        <p className="mt-4 text-sm md:text-base leading-relaxed italic">
-          Hier kommt ein Zitat über Berlin
-        </p>
-        <p className="mt-4 text-sm md:text-base leading-relaxed opacity-90">
-          {PLATZHALTER}
+        <h2 className="mt-8 text-2xl md:text-3xl font-bold">Berlin ist…</h2>
+        <p className="mt-4 text-sm md:text-base leading-relaxed">
+          <NL text={k.berlinIst || PLATZHALTER} />
         </p>
 
-        <div className="mt-14">
+        <div className="mt-14 md:mt-20">
           <SocialRow label={`Folge ${vorname} für weitere spannende Artiken`} />
         </div>
       </section>
-
-      <WasMehr />
     </main>
   );
 }

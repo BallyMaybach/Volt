@@ -16,9 +16,11 @@ export function NL({ text }) {
 // Bild mit Fallback-Platzhalter, falls in Sanity (noch) kein Bild gesetzt ist.
 export function CmsImg({ src, alt = "", className = "", ...rest }) {
   if (!src) {
+    // Eigene bg-Klasse im className gewinnt; sonst dezenter Default.
+    const fallbackBg = /(^|\s)bg-/.test(className) ? "" : "bg-volt-purple/10";
     return (
       <div
-        className={`${className} bg-volt-purple/10 flex items-center justify-center text-[10px] text-volt-purple/40 uppercase tracking-wide`}
+        className={`${className} ${fallbackBg} flex items-center justify-center text-[10px] text-volt-purple/40 uppercase tracking-wide`}
       >
         Foto folgt
       </div>
